@@ -3,6 +3,7 @@
 #include <cassert>
 #include <errno.h>
 #include <sys/signal.h>
+#include <typeinfo>
 
 #include <string>
 #include <vector>
@@ -72,7 +73,6 @@ void TestInitLogger()
     logger->AddAppender(file_appender);
 }
 
-#include "../src/loghelper.h"
 void TestAppendConsoleLog()
 {
     TEST_PROMPT(__FUNCTION__);
@@ -84,10 +84,11 @@ void TestAppendConsoleLog()
     std::shared_ptr<Log4CPP::Logger> logger = Log4CPP::Logger::GetLogger(module);
     logger->AddAppender(console_appender);
 
-    LOG_DEBUG(logger, "this debug log.");
-    LOG_ERROR(logger, "this error log.");
-    LOG_WARN(logger, "this warn log.");
-    LOG_INFO(logger, "this info log.");
+    logger->Debug("this debug log.");
+    logger->Error("this error log.");
+    logger->Warn("this warn log.");
+    logger->Info("this info log.");
+    logger->Fatal("this fatal log.");
 }
 void TestAppendFileLog()
 {
@@ -102,10 +103,91 @@ void TestAppendFileLog()
     std::shared_ptr<Log4CPP::Logger> logger = Log4CPP::Logger::GetLogger(module);
     logger->AddAppender(file_appender);
 
-    LOG_DEBUG(logger, "this debug log.");
-    LOG_ERROR(logger, "this error log.");
-    LOG_WARN(logger, "this warn log.");
-    LOG_INFO(logger, "this info log.");
+    logger->Debug("this debug log.");
+    logger->Error("this error log.");
+    logger->Warn("this warn log.");
+    logger->Info("this info log.");
+    logger->Fatal("this fatal log.");
+}
+void TestAppendConsoleLogByStream()
+{
+    TEST_PROMPT(__FUNCTION__);
+
+    std::shared_ptr<Log4CPP::Formatter> console_formatter(new Log4CPP::ConsoleFormatter());
+    std::shared_ptr<Log4CPP::Appender> console_appender = Log4CPP::ConsoleAppender::Get();
+    console_appender->SetFormatter(console_formatter);
+
+    const char* module = "test";
+    std::shared_ptr<Log4CPP::Logger> logger = Log4CPP::Logger::GetLogger(module);
+    logger->AddAppender(console_appender);
+
+    int times = 0;
+    logger->Debug() << "this debug log." << times++ << Log4CPP::Endl;
+    logger->Error() << "this error log." << times++ << Log4CPP::Endl;
+    logger->Warn() << "this warn log." << times++ << Log4CPP::Endl;
+    logger->Info() << "this info log." << times++ << Log4CPP::Endl;
+    logger->Fatal() << "this fatal log." << times++ << Log4CPP::Endl;
+}
+
+#define _TEST_LOG_STREAM_TYPE(var) \
+    logger->Debug() << "this debug log. "<<#var<<"(type:" << typeid(var).name() << ")" << var << Log4CPP::Endl;
+void TestAppendConsoleLogByStreamAllType()
+{
+    TEST_PROMPT(__FUNCTION__);
+
+    std::shared_ptr<Log4CPP::Formatter> console_formatter(new Log4CPP::ConsoleFormatter());
+    std::shared_ptr<Log4CPP::Appender> console_appender = Log4CPP::ConsoleAppender::Get();
+    console_appender->SetFormatter(console_formatter);
+
+    const char* module = "test";
+    std::shared_ptr<Log4CPP::Logger> logger = Log4CPP::Logger::GetLogger(module);
+    logger->AddAppender(console_appender);
+
+    const std::string log_tex("this fatal log.");
+    logger->Fatal() << log_tex << Log4CPP::Endl;
+
+    bool val1 = false;
+    _TEST_LOG_STREAM_TYPE(val1);
+    val1 = true;
+    _TEST_LOG_STREAM_TYPE(val1);
+
+    short val2 = -1;
+    _TEST_LOG_STREAM_TYPE(val2);
+
+    unsigned short val3 = 0;
+    _TEST_LOG_STREAM_TYPE(val3);
+
+    int val4 = -1;
+    _TEST_LOG_STREAM_TYPE(val4);
+
+    unsigned int val5 = 1;
+    _TEST_LOG_STREAM_TYPE(val5);
+
+    long val6 = -1l;
+    _TEST_LOG_STREAM_TYPE(val6);
+
+    unsigned long val7 = 1lu;
+    _TEST_LOG_STREAM_TYPE(val7);
+
+    long long val8 = -1ll;
+    _TEST_LOG_STREAM_TYPE(val8);
+
+    unsigned long long val9 = 1llu;
+    _TEST_LOG_STREAM_TYPE(val9);
+
+    float val10 = 0.1f;
+    _TEST_LOG_STREAM_TYPE(val10);
+
+    double val11 = 0.1;
+    _TEST_LOG_STREAM_TYPE(val11);
+
+    long double val12 = 0.1;
+    _TEST_LOG_STREAM_TYPE(val12);
+
+    char *val13 = new char[6];
+    sprintf(val13, "hello");
+    _TEST_LOG_STREAM_TYPE(val13);
+    delete [] val13;
 }
 
 int main(int argc, char* argv[])
@@ -119,6 +201,8 @@ int main(int argc, char* argv[])
     TestInitLogger();
     TestAppendConsoleLog();
     TestAppendFileLog();
+    TestAppendConsoleLogByStream();
+    TestAppendConsoleLogByStreamAllType();
     return 0;
 }
 

@@ -4,6 +4,7 @@
 #include <iostream>
 #include <memory>
 #include <map>
+#include <vector>
 #include <string>
 
 #include "log_event.h"
@@ -12,8 +13,106 @@
 
 namespace Log4CPP
 {
+class Logger;
+class LogStream
+{
+public:
+    LogStream(Logger *ptr, const Level level) : _logger_ptr(ptr), _level(level)
+    {
+    }
+
+public:
+    void Flush();
+    LogStream& operator<< (LogStream& (*pf)(LogStream&))
+    {
+        return (*pf)(*this);
+    }
+    LogStream& operator<< (bool val)
+    {
+        _log_items.push_back(val?"true":"false");
+        return *this;
+    }
+    LogStream& operator<< (short val)
+    {
+        _log_items.push_back(std::to_string(val));
+        return *this;
+    }
+    LogStream& operator<< (unsigned short data)
+    {
+        _log_items.push_back(std::to_string(data));
+        return *this;
+    }
+    LogStream& operator<< (int data)
+    {
+        _log_items.push_back(std::to_string(data));
+        return *this;
+    }
+    LogStream& operator<< (unsigned int data)
+    {
+        _log_items.push_back(std::to_string(data));
+        return *this;
+    }
+    LogStream& operator<< (long data)
+    {
+        _log_items.push_back(std::to_string(data));
+        return *this;
+    }
+    LogStream& operator<< (unsigned long data)
+    {
+        _log_items.push_back(std::to_string(data));
+        return *this;
+    }
+    LogStream& operator<< (long long data)
+    {
+        _log_items.push_back(std::to_string(data));
+        return *this;
+    }
+    LogStream& operator<< (unsigned long long data)
+    {
+        _log_items.push_back(std::to_string(data));
+        return *this;
+    }
+    LogStream& operator<< (float val)
+    {
+        _log_items.push_back(std::to_string(val));
+        return *this;
+    }
+    LogStream& operator<< (double val)
+    {
+        _log_items.push_back(std::to_string(val));
+        return *this;
+    }
+    LogStream& operator<< (long double val)
+    {
+        _log_items.push_back(std::to_string(val));
+        return *this;
+    }
+    LogStream& operator<< (const char* data)
+    {
+        _log_items.push_back(data);
+        return *this;
+    }
+    LogStream& operator<< (const std::string& data)
+    {
+        _log_items.push_back(data);
+        return *this;
+    }
+    
+private:
+    Logger* _logger_ptr{nullptr};
+    Level _level;
+    std::vector<std::string> _log_items;    
+};
+
+LogStream& Endl(LogStream& stream)
+{
+    stream.Flush();
+    return stream;
+}
+
 class Logger
 {
+    friend class LogStream;
 private:
     Logger(const char* name) : _log_name(name), _level(Level::ALL)
     {
@@ -56,6 +155,27 @@ public:
     void Fatal(const char* log)
     {
         Append(Level::FATAL, log);
+    }
+
+    LogStream Debug()
+    {
+        return LogStream(this, Level::DEBUG);
+    }
+    LogStream Info()
+    {
+        return LogStream(this, Level::INFO);
+    }
+    LogStream Warn()
+    {
+        return LogStream(this, Level::WARN);
+    }
+    LogStream Error()
+    {
+        return  LogStream(this, Level::ERROR);
+    }
+    LogStream Fatal()
+    {
+        return  LogStream(this, Level::FATAL);
     }
 
 private:
@@ -139,6 +259,15 @@ std::shared_ptr<Logger> Logger::GetLogger(const char* module_name)
     return std::shared_ptr<Logger>(logger);
 }
 
+void LogStream::Flush()
+{
+    std::string log_line;
+    for(const auto& item : _log_items )
+        log_line.append(item);
+
+    _logger_ptr->Append(_level, log_line.c_str());
 }
 
+
+}
 #endif
