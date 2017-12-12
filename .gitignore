@@ -1,0 +1,4 @@
+bin/
+*.{o,out}
+so_log_test
+test.log*
