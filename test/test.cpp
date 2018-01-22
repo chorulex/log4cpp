@@ -83,6 +83,7 @@ void TestAppendConsoleLog()
     const char* module = "test";
     std::shared_ptr<Log4CPP::Logger> logger = Log4CPP::Logger::GetLogger(module);
     logger->AddAppender(console_appender);
+    logger->SetLevel(Log4CPP::Level::ALL);
 
     logger->Debug("this debug log.");
     logger->Error("this error log.");
@@ -102,6 +103,7 @@ void TestAppendFileLog()
     const char* module = "test";
     std::shared_ptr<Log4CPP::Logger> logger = Log4CPP::Logger::GetLogger(module);
     logger->AddAppender(file_appender);
+    logger->SetLevel(Log4CPP::Level::ALL);
 
     logger->Debug("this debug log.");
     logger->Error("this error log.");
@@ -120,6 +122,7 @@ void TestAppendConsoleLogByStream()
     const char* module = "test";
     std::shared_ptr<Log4CPP::Logger> logger = Log4CPP::Logger::GetLogger(module);
     logger->AddAppender(console_appender);
+    logger->SetLevel(Log4CPP::Level::ALL);
 
     int times = 0;
     logger->Debug() << "this debug log." << times++ << Log4CPP::Endl;
@@ -142,6 +145,7 @@ void TestAppendConsoleLogByStreamAllType()
     const char* module = "test";
     std::shared_ptr<Log4CPP::Logger> logger = Log4CPP::Logger::GetLogger(module);
     logger->AddAppender(console_appender);
+    logger->SetLevel(Log4CPP::Level::ALL);
 
     const std::string log_tex("this fatal log.");
     logger->Fatal() << log_tex << Log4CPP::Endl;

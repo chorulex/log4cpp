@@ -104,7 +104,7 @@ private:
     std::vector<std::string> _log_items;    
 };
 
-LogStream& Endl(LogStream& stream)
+inline LogStream& Endl(LogStream& stream)
 {
     stream.Flush();
     return stream;
@@ -266,7 +266,7 @@ inline std::shared_ptr<Logger> Logger::GetLogger(const char* module_name)
     return std::shared_ptr<Logger>(logger);
 }
 
-void LogStream::Flush()
+inline void LogStream::Flush()
 {
     std::string log_line;
     for(const auto& item : _log_items )
