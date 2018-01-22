@@ -134,6 +134,13 @@ public:
     void SetLevel(const Level lev)
     {
         _level = lev;
+        if( _level == Level::OFF ){
+            for(auto& appender : _log_appender_list)
+                appender->stop();
+        }else{
+            for(auto& appender : _log_appender_list)
+                appender->restart();
+        }
     }
 
     void Debug(const char* log)
@@ -187,7 +194,7 @@ private:
 
         LogEvent e(_log_name.c_str(), level, log);
 
-        for(auto appender : _log_appender_list)
+        for(auto& appender : _log_appender_list)
             appender->Append(e);
     }
 
@@ -251,7 +258,7 @@ private:
     std::map<std::string, Logger*> _logger_list;
 };
 
-std::shared_ptr<Logger> Logger::GetLogger(const char* module_name)
+inline std::shared_ptr<Logger> Logger::GetLogger(const char* module_name)
 {
     Logger* logger = new Logger(module_name);
     LoggerManager::Instance().Register(module_name, logger);

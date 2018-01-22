@@ -1,6 +1,9 @@
 #ifndef _LOGGER_H_
 #define _LOGGER_H_
 
+#include <sys/types.h>
+#include <sys/syscall.h>
+#include <unistd.h>
 #include <cstdarg>
 #include <cstring>
 #include <sstream>
@@ -16,19 +19,20 @@
 
 namespace
 {
-std::string GetCurrentThreadID()
+unsigned int GetCurrentThreadID()
 {
-    std::ostringstream stream;
-    stream << std::this_thread::get_id();
-    return stream.str();
+    return syscall(SYS_gettid);
 }
 
 const static int MAX_LOG_BUF_LEN = 4096;
 
+#define LOG_LOCATION() \
+    sprintf(buffer, "[%u] [%s:%d][%s] ", GetCurrentThreadID(), __FILE__, __LINE__, __FUNCTION__); 
+
 #define LOG_DEBUG(logger, format, ...) \
 { \
     char buffer[MAX_LOG_BUF_LEN] = {0}; \
-    sprintf(buffer, "[%s] [%s:%d][%s] ", GetCurrentThreadID().c_str(), __FILE__, __LINE__, __FUNCTION__); \
+    LOG_LOCATION();\
     sprintf(buffer + strlen(buffer), format,  ##__VA_ARGS__); \
     logger->Debug(buffer); \
 }
@@ -36,7 +40,7 @@ const static int MAX_LOG_BUF_LEN = 4096;
 #define LOG_INFO(logger, format, ...) \
 { \
     char buffer[MAX_LOG_BUF_LEN] = {0}; \
-    sprintf(buffer, "[%s] [%s:%d][%s] ", GetCurrentThreadID().c_str(), __FILE__, __LINE__, __FUNCTION__); \
+    LOG_LOCATION();\
     sprintf(buffer + strlen(buffer), format,  ##__VA_ARGS__); \
     logger->Info(buffer); \
 }
@@ -44,7 +48,7 @@ const static int MAX_LOG_BUF_LEN = 4096;
 #define LOG_WARN(logger, format, ...) \
 { \
     char buffer[MAX_LOG_BUF_LEN] = {0}; \
-    sprintf(buffer, "[%s] [%s:%d][%s] ", GetCurrentThreadID().c_str(), __FILE__, __LINE__, __FUNCTION__); \
+    LOG_LOCATION();\
     sprintf(buffer + strlen(buffer), format,  ##__VA_ARGS__); \
     logger->Warn(buffer); \
 }
@@ -52,7 +56,7 @@ const static int MAX_LOG_BUF_LEN = 4096;
 #define LOG_ERROR(logger, format, ...) \
 { \
     char buffer[MAX_LOG_BUF_LEN] = {0}; \
-    sprintf(buffer, "[%s] [%s:%d][%s] ", GetCurrentThreadID().c_str(), __FILE__, __LINE__, __FUNCTION__); \
+    LOG_LOCATION();\
     sprintf(buffer + strlen(buffer), format,  ##__VA_ARGS__); \
     logger->Error(buffer); \
 }
@@ -60,7 +64,7 @@ const static int MAX_LOG_BUF_LEN = 4096;
 #define LOG_FATAL(logger, format, ...) \
 { \
     char buffer[MAX_LOG_BUF_LEN] = {0}; \
-    sprintf(buffer, "[%s] [%s:%d][%s] ", GetCurrentThreadID().c_str(), __FILE__, __LINE__, __FUNCTION__); \
+    LOG_LOCATION();\
     sprintf(buffer + strlen(buffer), format,  ##__VA_ARGS__); \
     logger->Fatal(buffer); \
 }

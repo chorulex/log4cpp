@@ -35,7 +35,7 @@ void TestConstructConsoleAppender()
 {
     TEST_PROMPT(__FUNCTION__);
 
-    std::shared_ptr<Log4CPP::ConsoleAppender> appender = Log4CPP::ConsoleAppender::Get();
+    std::shared_ptr<Log4CPP::Appender> appender = Log4CPP::ConsoleAppender::Get();
 }
 
 void TestConstructFileAppender()

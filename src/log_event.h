@@ -26,6 +26,23 @@ public:
         //time(&_timestamp);
     }
 
+    LogEvent(const LogEvent& other) = default;
+    LogEvent(const LogEvent&& other)
+    {
+        this->_module = other._module;
+        this->_level = other._level;
+        this->_text = std::move(other._text);
+        this->_timestamp = other._timestamp;
+    }
+    LogEvent& operator= (const LogEvent&& other)
+    {
+        this->_module = other._module;
+        this->_level = other._level;
+        this->_text = std::move(other._text);
+        this->_timestamp = other._timestamp;
+        return *this;
+    }
+
     const char* Module() const { return _module;}
     const timeval& Timestamp() const { return _timestamp;}
     const Level& LogLevel() const { return _level;}

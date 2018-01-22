@@ -14,10 +14,10 @@ public:
     virtual ~Formatter() {}
     virtual std::string Format(const LogEvent& e)
     {
-        std::string log_str(FormatHeader(e));
+        std::string log_str = std::move(FormatHeader(e));
         log_str.append(e.Text());
 
-        return log_str;
+        return std::move(log_str);
     }
 
 protected:
@@ -67,7 +67,7 @@ private:
         header.append("[").append(FormatTimestamp(e.Timestamp())).append("] ");
         header.append("[").append(e.Module()).append("] ");
         header.append(FormatLevel(e.LogLevel())).append(" ");
-        return header;
+        return std::move(header);
     }
 };
 class FileFormatter : public Formatter
@@ -78,9 +78,9 @@ private:
     std::string FormatHeader(const LogEvent& e) override
     {
         std::string header;
-        header.append("[").append(FormatTimestamp(e.Timestamp())).append("] ");
+        header.append("[").append(std::move(FormatTimestamp(e.Timestamp()))).append("] ");
         header.append(FormatLevel(e.LogLevel())).append(" ");
-        return header;
+        return std::move(header);
     }
 };
 

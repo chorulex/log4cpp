@@ -23,36 +23,18 @@ public:
         , _max_log_file_count(file_count)
         , _max_file_size(max_size_per_file * 1024 * 1024)
     {
-        if( !Open() )
-            return ;
-
-        _stop = false;
-        _log_loop_thread = std::thread(&FileAppender::WriteLogThread, this);
+        Open();
     }
     ~FileAppender()
     {
-        _stop = true;
-        _queue_cond.notify_all();
-
-        if( _log_loop_thread.joinable() )
-            _log_loop_thread.join();
-
+        stop();
         Close();
     }
 
-    void SetFormatter(std::shared_ptr<Formatter>& formatter) override
-    {
-        _log_formatter = formatter;
-    }
-
-    void Output(const std::string& log_str) override
-    {
-        _file_buffer << log_str << std::endl;
-    }
-
 private:
-    void WriteLogThread()
+    void WriteLogThread() override
     {
+        //std::cout << "Start file logger." << __PRETTY_FUNCTION__ << std::endl;
         while(!_stop){
             std::unique_lock<std::mutex> lock(_queue_mtx);
             _queue_cond.wait(lock, [this]{ return !_log_queue.empty() || _stop;});
@@ -86,8 +68,8 @@ private:
 
     bool Pop()
     {
-        LogEvent log_ev = _log_queue.front();
-        _log_queue.pop();
+        LogEvent log_ev = std::move(_log_queue.front());
+        _log_queue.pop_front();
 
         const std::string& log_str = _log_formatter->Format(log_ev);
         Output(log_str);
@@ -100,6 +82,11 @@ private:
         }
 
         return true;
+    }
+
+    void Output(const std::string& log_str) override
+    {
+        _file_buffer << log_str << std::endl;
     }
 
     bool IsFull()
