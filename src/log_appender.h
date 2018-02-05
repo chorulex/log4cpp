@@ -44,7 +44,11 @@ protected:
     void stop()
     {
         _stop = true;
-        _queue_cond.notify_all();
+
+        {
+            std::lock_guard<std::mutex> lock(_queue_mtx);
+            _queue_cond.notify_all();
+        }
 
         if( _log_loop_thread.joinable() )
             _log_loop_thread.join();

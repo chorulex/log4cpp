@@ -1,7 +1,7 @@
 PROGRAMS	:= so_log_test
 CXX 		:= g++
 CXXFLAGS	:= -std=c++11 -Wall -g
-LDFLAGS		:= -Wall -g
+LDFLAGS		:= -pg
 LDLIBS = -lpthread
 SLIBS=
 #-L./lib/

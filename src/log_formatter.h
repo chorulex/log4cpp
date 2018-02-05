@@ -36,7 +36,7 @@ protected:
         return time_str;
     }
 
-    std::string FormatLevel(Level level)
+    const char* FormatLevel(Level level)
     {
         switch(level)
         {
