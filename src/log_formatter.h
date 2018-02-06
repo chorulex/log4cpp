@@ -1,5 +1,14 @@
-#ifndef _QT_LOG_FORMATTER_H_
-#define _QT_LOG_FORMATTER_H_
+/**
+ * Light weight log lib for c++.
+ * 
+ * log_formatter.h
+ * 
+ * auth: kefengxian
+ * email:yanortun@msn.cn
+ */
+
+#ifndef _LOG4CPP_FORMATTER_H_
+#define _LOG4CPP_FORMATTER_H_
 
 #include <string>
 

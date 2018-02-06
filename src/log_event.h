@@ -1,5 +1,14 @@
-#ifndef _QT_LOG_EVENT_H_
-#define _QT_LOG_EVENT_H_
+/**
+ * Light weight log lib for c++.
+ * 
+ * log_event.h
+ * 
+ * auth: kefengxian
+ * email:yanortun@msn.cn
+ */
+
+#ifndef _LOG4CPP_EVENT_H_
+#define _LOG4CPP_EVENT_H_
 
 #include <ctime>
 #include <sys/time.h>

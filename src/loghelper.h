@@ -1,5 +1,14 @@
-#ifndef _LOGGER_H_
-#define _LOGGER_H_
+/**
+ * Light weight log lib for c++.
+ * 
+ * loghepler.h
+ * 
+ * auth: kefengxian
+ * email:yanortun@msn.cn
+ */
+
+#ifndef _LOG4CPP_HELPER_H_
+#define _LOG4CPP_HELPER_H_
 
 #include <sys/types.h>
 #include <sys/syscall.h>

@@ -1,5 +1,14 @@
-#ifndef _QT_LOG_APPENDER_H_
-#define _QT_LOG_APPENDER_H_
+/**
+ * Light weight log lib for c++.
+ * 
+ * log_appender.h
+ * 
+ * auth: kefengxian
+ * email:yanortun@msn.cn
+ */
+
+#ifndef _LOG4CPP_APPENDER_H_
+#define _LOG4CPP_APPENDER_H_
 
 #include <queue>
 #include <list>

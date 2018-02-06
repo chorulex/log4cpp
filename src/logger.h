@@ -1,5 +1,14 @@
-#ifndef _QT_LOG_H_
-#define _QT_LOG_H_
+/**
+ * Light weight log lib for c++.
+ * 
+ * logger.h
+ * 
+ * auth: kefengxian
+ * email:yanortun@msn.cn
+ */
+
+#ifndef _LOG4CPP_LOGGER_H_
+#define _LOG4CPP_LOGGER_H_
 
 #include <iostream>
 #include <memory>
