@@ -24,8 +24,9 @@ protected:
 public:
     virtual ~Appender() {}
 
-    virtual void SetFormatter(std::shared_ptr<Formatter>& formatter)
+    virtual void SetFormatter(const std::shared_ptr<Log4CPP::Formatter>& formatter)
     {
+        std::lock_guard<std::mutex> lock(_queue_mtx);
         _log_formatter = formatter;
     }
 
@@ -37,8 +38,6 @@ public:
             _queue_cond.notify_all();
         }
     }
-
-    virtual void Output(const std::string& log_str) = 0;
 
 protected:
     void stop()
@@ -52,12 +51,14 @@ protected:
 
         if( _log_loop_thread.joinable() )
             _log_loop_thread.join();
+
     }
 
     void start()
     {
         _stop = false;
         _log_loop_thread = std::thread(&Appender::WriteLogThread, this);
+        while( !_thread_exec );
     }
 
     void restart()
@@ -68,9 +69,10 @@ protected:
 
 protected:
     virtual void WriteLogThread() = 0;
+    virtual void Output(const std::string& log_str) = 0;
 
 protected:
-    std::shared_ptr<Formatter> _log_formatter;
+    std::shared_ptr<Log4CPP::Formatter> _log_formatter;
 
     std::list<LogEvent> _log_queue;
     std::mutex _queue_mtx;
@@ -78,6 +80,7 @@ protected:
 
     std::atomic_bool _stop {true};
     std::thread _log_loop_thread;
+    std::atomic_bool _thread_exec {false};
 };
 
 }

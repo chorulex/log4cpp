@@ -59,12 +59,12 @@ void TestInitLogger()
 {
     TEST_PROMPT(__FUNCTION__);
 
-    std::shared_ptr<Log4CPP::Formatter> console_formatter(new Log4CPP::ConsoleFormatter());
+    std::shared_ptr<Log4CPP::Formatter> console_formatter(new Log4CPP::ConsoleFormatter);
     std::shared_ptr<Log4CPP::Appender> console_appender = Log4CPP::ConsoleAppender::Get();
     console_appender->SetFormatter(console_formatter);
 
     const char* file_path = "test.log";
-    std::shared_ptr<Log4CPP::Formatter> file_formatter(new Log4CPP::FileFormatter());
+    std::shared_ptr<Log4CPP::Formatter> file_formatter(new Log4CPP::FileFormatter);
     std::shared_ptr<Log4CPP::FileAppender> file_appender(new Log4CPP::FileAppender(file_path));
     file_appender->SetFormatter(file_formatter);
 
@@ -77,7 +77,7 @@ void TestInitLogger()
 void TestAppendConsoleLog()
 {
     TEST_PROMPT(__FUNCTION__);
-    std::shared_ptr<Log4CPP::Formatter> console_formatter(new Log4CPP::ConsoleFormatter());
+    std::shared_ptr<Log4CPP::Formatter> console_formatter(new Log4CPP::ConsoleFormatter);
     std::shared_ptr<Log4CPP::Appender> console_appender = Log4CPP::ConsoleAppender::Get();
     console_appender->SetFormatter(console_formatter);
 
@@ -97,7 +97,7 @@ void TestAppendFileLog()
     TEST_PROMPT(__FUNCTION__);
 
     const char* file_path = "test.log";
-    std::shared_ptr<Log4CPP::Formatter> file_formatter(new Log4CPP::FileFormatter());
+    std::shared_ptr<Log4CPP::Formatter> file_formatter(new Log4CPP::FileFormatter);
     std::shared_ptr<Log4CPP::FileAppender> file_appender(new Log4CPP::FileAppender(file_path));
     file_appender->SetFormatter(file_formatter);
 
@@ -116,7 +116,7 @@ void TestAppendConsoleLogByStream()
 {
     TEST_PROMPT(__FUNCTION__);
 
-    std::shared_ptr<Log4CPP::Formatter> console_formatter(new Log4CPP::ConsoleFormatter());
+    std::shared_ptr<Log4CPP::Formatter> console_formatter(new Log4CPP::ConsoleFormatter);
     std::shared_ptr<Log4CPP::Appender> console_appender = Log4CPP::ConsoleAppender::Get();
     console_appender->SetFormatter(console_formatter);
 
@@ -139,7 +139,7 @@ void TestAppendConsoleLogByStreamAllType()
 {
     TEST_PROMPT(__FUNCTION__);
 
-    std::shared_ptr<Log4CPP::Formatter> console_formatter(new Log4CPP::ConsoleFormatter());
+    std::shared_ptr<Log4CPP::Formatter> console_formatter(new Log4CPP::ConsoleFormatter);
     std::shared_ptr<Log4CPP::Appender> console_appender = Log4CPP::ConsoleAppender::Get();
     console_appender->SetFormatter(console_formatter);
 
@@ -197,15 +197,16 @@ void TestAppendConsoleLogByStreamAllType()
 
 int main(int argc, char* argv[])
 {
+    TestInitLogger();
     TestConstructConsoleFormatter();
     TestConstructFileFormatter();
     TestConstructConsoleAppender();
     TestConstructFileAppender();
     TestConstructLogger();
 
-    TestInitLogger();
-    TestAppendConsoleLog();
     TestAppendFileLog();
+
+    TestAppendConsoleLog();
     TestAppendConsoleLogByStream();
     TestAppendConsoleLogByStreamAllType();
     return 0;

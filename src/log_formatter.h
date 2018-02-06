@@ -10,11 +10,13 @@ namespace Log4CPP
 
 class Formatter
 {
+protected:
+    virtual ~Formatter() {};
+
 public:
-    virtual ~Formatter() {}
-    virtual std::string Format(const LogEvent& e)
+    std::string Format(const LogEvent& e)
     {
-        std::string log_str = std::move(FormatHeader(e));
+        std::string log_str = std::move(this->FormatHeader(e));
         log_str.append(e.Text());
 
         return std::move(log_str);
@@ -59,7 +61,6 @@ public:
     ~ConsoleFormatter() {}
 
 public:
-
 private:
     std::string FormatHeader(const LogEvent& e) override
     {
@@ -73,7 +74,6 @@ private:
 class FileFormatter : public Formatter
 {
 public:
-
 private:
     std::string FormatHeader(const LogEvent& e) override
     {

@@ -29,22 +29,18 @@ public:
 private:
     void WriteLogThread() override
     {
+        _thread_exec = true;
+
         while(!_stop){
             std::unique_lock<std::mutex> lock(_queue_mtx);
             _queue_cond.wait(lock, [this]{ return !_log_queue.empty() || _stop;});
-            if( _stop ){
-                while( !_log_queue.empty() ) Pop();
-                break;
-            }
 
+            if( _stop ) break;
             Pop();
         }
-    }
 
-    void SetFormatter(std::shared_ptr<Formatter>& formatter)
-    {
-        std::lock_guard<std::mutex> lock(_queue_mtx);
-        _log_formatter = formatter;
+        while( !_log_queue.empty() ) Pop();
+        _thread_exec = false;
     }
 
     void Pop()

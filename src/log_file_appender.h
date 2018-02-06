@@ -34,18 +34,18 @@ public:
 private:
     void WriteLogThread() override
     {
-        //std::cout << "Start file logger." << __PRETTY_FUNCTION__ << std::endl;
+        _thread_exec = true;
+
         while(!_stop){
             std::unique_lock<std::mutex> lock(_queue_mtx);
             _queue_cond.wait(lock, [this]{ return !_log_queue.empty() || _stop;});
-            if( _stop ){
-                while( !_log_queue.empty() ) Pop();
-                break;
-            }
 
-            if( !Pop() )
-                break;
+            if( _stop ) break;
+            if( !Pop() ) break;
         }
+
+        while( !_log_queue.empty() ) Pop();
+        _thread_exec = false;
     }
     bool Open()
     {
@@ -86,6 +86,7 @@ private:
 
     void Output(const std::string& log_str) override
     {
+        std::cout << log_str << std::endl;
         _file_buffer << log_str << std::endl;
     }
 
