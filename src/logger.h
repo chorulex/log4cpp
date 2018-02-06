@@ -136,10 +136,10 @@ public:
         _level = lev;
         if( _level == Level::OFF ){
             for(auto& appender : _log_appender_list)
-                appender->stop();
+                appender->Stop();
         }else{
             for(auto& appender : _log_appender_list)
-                appender->restart();
+                appender->Restart();
         }
     }
 
