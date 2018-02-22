@@ -22,6 +22,8 @@ void TestConstructConsoleFormatter()
 {
     TEST_PROMPT(__FUNCTION__);
 
+    Log4CPP::LoggerManager::Instance().Clear();
+
     std::shared_ptr<Log4CPP::ConsoleFormatter> formatter(new Log4CPP::ConsoleFormatter());
     auto new_app = formatter->shared_from_this();
     assert(new_app != nullptr);
@@ -30,6 +32,8 @@ void TestConstructConsoleFormatter()
 void TestConstructFileFormatter()
 {
     TEST_PROMPT(__FUNCTION__);
+
+    Log4CPP::LoggerManager::Instance().Clear();
 
     std::shared_ptr<Log4CPP::FileFormatter> formatter(new Log4CPP::FileFormatter());
     auto new_app = formatter->shared_from_this();
@@ -40,6 +44,8 @@ void TestConstructConsoleAppender()
 {
     TEST_PROMPT(__FUNCTION__);
 
+    Log4CPP::LoggerManager::Instance().Clear();
+
     std::shared_ptr<Log4CPP::ConsoleAppender> appender = Log4CPP::ConsoleAppender::Get();
     auto new_app = appender->shared_from_this();
     assert(new_app != nullptr);
@@ -48,6 +54,8 @@ void TestConstructConsoleAppender()
 void TestConstructFileAppender()
 {
     TEST_PROMPT(__FUNCTION__);
+
+    Log4CPP::LoggerManager::Instance().Clear();
 
     const char* file_path = "test.log";
     std::shared_ptr<Log4CPP::FileAppender> appender(new Log4CPP::FileAppender(file_path));
@@ -59,6 +67,8 @@ void TestConstructLogger()
 {
     TEST_PROMPT(__FUNCTION__);
 
+    Log4CPP::LoggerManager::Instance().Clear();
+
     const char* module = "test";
     std::shared_ptr<Log4CPP::Logger> logger = Log4CPP::Logger::GetLogger(module);
     auto new_app = logger->shared_from_this();
@@ -68,6 +78,8 @@ void TestConstructLogger()
 void TestInitLogger()
 {
     TEST_PROMPT(__FUNCTION__);
+
+    Log4CPP::LoggerManager::Instance().Clear();
 
     std::shared_ptr<Log4CPP::Formatter> console_formatter(new Log4CPP::ConsoleFormatter);
     std::shared_ptr<Log4CPP::ConsoleAppender> console_appender = Log4CPP::ConsoleAppender::Get();
@@ -87,6 +99,9 @@ void TestInitLogger()
 void TestAppendConsoleLog()
 {
     TEST_PROMPT(__FUNCTION__);
+
+    Log4CPP::LoggerManager::Instance().Clear();
+
     std::shared_ptr<Log4CPP::Formatter> console_formatter(new Log4CPP::ConsoleFormatter);
     std::shared_ptr<Log4CPP::ConsoleAppender> console_appender = Log4CPP::ConsoleAppender::Get();
     console_appender->SetFormatter(console_formatter);
@@ -105,6 +120,8 @@ void TestAppendConsoleLog()
 void TestAppendFileLog()
 {
     TEST_PROMPT(__FUNCTION__);
+
+    Log4CPP::LoggerManager::Instance().Clear();
 
     const char* file_path = "test.log";
     std::shared_ptr<Log4CPP::Formatter> file_formatter(new Log4CPP::FileFormatter);
@@ -125,6 +142,8 @@ void TestAppendFileLog()
 void TestAppendConsoleLogByStream()
 {
     TEST_PROMPT(__FUNCTION__);
+
+    Log4CPP::LoggerManager::Instance().Clear();
 
     std::shared_ptr<Log4CPP::Formatter> console_formatter(new Log4CPP::ConsoleFormatter);
     std::shared_ptr<Log4CPP::ConsoleAppender> console_appender = Log4CPP::ConsoleAppender::Get();
@@ -148,6 +167,8 @@ void TestAppendConsoleLogByStream()
 void TestAppendConsoleLogByStreamAllType()
 {
     TEST_PROMPT(__FUNCTION__);
+
+    Log4CPP::LoggerManager::Instance().Clear();
 
     std::shared_ptr<Log4CPP::Formatter> console_formatter(new Log4CPP::ConsoleFormatter);
     std::shared_ptr<Log4CPP::ConsoleAppender> console_appender = Log4CPP::ConsoleAppender::Get();

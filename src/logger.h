@@ -241,15 +241,24 @@ public:
     }
 
 public:
-    void Register(const std::string& logger_name, Logger* logger)
+    void Clear()
+    {
+        _logger_list.clear();
+    }
+
+    void Register(const std::string& logger_name, std::shared_ptr<Logger> logger)
     {
         if( _logger_list.count(logger_name) == 0 )
             _logger_list[logger_name] = logger;
     }
 
-    Logger* Query(const std::string& logger_name)
+    std::shared_ptr<Logger> Query(const std::string& logger_name) const
     {
-        return _logger_list.count(logger_name) == 0 ? nullptr : _logger_list[logger_name];
+        auto iter = _logger_list.find(logger_name);
+        if( iter == _logger_list.end() )
+            return std::shared_ptr<Logger>();
+
+        return iter->second;
     }
 
     void Disable(const std::string& logger_name)
@@ -265,15 +274,20 @@ public:
     }
 
 private:
-    std::map<std::string, Logger*> _logger_list;
+    std::map<std::string, std::shared_ptr<Logger>> _logger_list;
 };
 
 inline std::shared_ptr<Logger> Logger::GetLogger(const char* module_name)
 {
-    Logger* logger = new Logger(module_name);
-    LoggerManager::Instance().Register(module_name, logger);
+    LoggerManager& manager = LoggerManager::Instance();
 
-    return std::shared_ptr<Logger>(logger);
+    std::shared_ptr<Logger> logger = manager.Query(module_name);
+    if( !logger ){
+        logger.reset(new Logger(module_name));
+        manager.Register(module_name, logger);
+    }
+
+    return logger;
 }
 
 inline void LogStream::Flush()
