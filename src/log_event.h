@@ -10,22 +10,13 @@
 #ifndef _LOG4CPP_EVENT_H_
 #define _LOG4CPP_EVENT_H_
 
-#include <ctime>
 #include <sys/time.h>
+
+#include <ctime>
+#include "log_level.h"
 
 namespace Log4CPP
 {
-enum class Level
-{
-    ALL = 0,    // open all level.
-    DEBUG,
-    INFO,
-    WARN,
-    ERROR,
-    FATAL,
-    OFF         // turn off all level.
-};
-
 class LogEvent
 {
 public:
