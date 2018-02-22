@@ -10,16 +10,21 @@
 #ifndef _LOG4CPP_FILE_LOG_APPENDER_H_
 #define _LOG4CPP_FILE_LOG_APPENDER_H_
 
+// linux
 #include <sys/stat.h>
+
 #include <iostream>
 #include <fstream>
+#include <memory>
 
 #include "log_appender.h"
 
 namespace Log4CPP
 {
 
-class FileAppender : public Appender
+class FileAppender
+    : public Appender
+    , public std::enable_shared_from_this<FileAppender>
 {
 public:
     /**

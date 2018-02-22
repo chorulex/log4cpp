@@ -11,6 +11,7 @@
 #define _LOG4CPP_FORMATTER_H_
 
 #include <string>
+#include <memory>
 
 #include "log_event.h"
 
@@ -64,7 +65,9 @@ protected:
     }
 };
 
-class ConsoleFormatter : public Formatter
+class ConsoleFormatter
+    : public Formatter
+    , public std::enable_shared_from_this<ConsoleFormatter>
 {
 public:
     ~ConsoleFormatter() {}
@@ -80,7 +83,9 @@ private:
         return std::move(header);
     }
 };
-class FileFormatter : public Formatter
+class FileFormatter
+    : public Formatter
+    , public std::enable_shared_from_this<FileFormatter>
 {
 public:
 private:

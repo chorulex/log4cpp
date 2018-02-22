@@ -120,6 +120,7 @@ inline LogStream& Endl(LogStream& stream)
 }
 
 class Logger
+    : public std::enable_shared_from_this<Logger>
 {
     friend class LogStream;
 private:
