@@ -67,7 +67,7 @@ private:
 
     void Output(const std::string& log_str) override
     {
-        std::cout << log_str << std::endl;
+        //std::cout << log_str << std::endl;
         _file_buffer << log_str << std::endl;
 
         if( IsFull() ){
