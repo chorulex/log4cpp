@@ -21,10 +21,7 @@
 #include <iostream>
 #include <thread>
 
-#include "log_file_appender.h"
-#include "log_console_appender.h"
-
-#include "logger.h"
+#include "log4cpp.h"
 
 namespace
 {

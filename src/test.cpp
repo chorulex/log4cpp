@@ -10,10 +10,7 @@
 #include <vector>
 #include <iostream>
 
-#include "../src/log_console_appender.h"
-#include "../src/log_file_appender.h"
-#include "../src/logger.h"
-#include "../src/log_configure.h"
+#include "log4cpp.h"
 
 const char* PROMPT_STR = ">> ";
 #define TEST_PROMPT(func) printf("[%s] --- RUNNING\n", func);

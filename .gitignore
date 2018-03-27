@@ -4,3 +4,4 @@ bin/
 so_log_test
 test.log*
 .vscode
+test
