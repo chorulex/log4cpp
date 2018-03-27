@@ -119,12 +119,13 @@ inline LogStream& Endl(LogStream& stream)
     return stream;
 }
 
+#include "log_configure.h"
 class Logger
     : public std::enable_shared_from_this<Logger>
 {
     friend class LogStream;
 private:
-    Logger(const char* name) : _log_name(name), _level(Level::ALL)
+    Logger(const char* name) : _log_name(name)
     {
     }
 public:
@@ -139,18 +140,6 @@ public:
     void AddAppender(std::shared_ptr<Appender> appender)
     {
         _log_appender_list.push_back(appender);
-    }
-
-    void SetLevel(const Level lev)
-    {
-        _level = lev;
-        if( _level == Level::OFF ){
-            for(auto& appender : _log_appender_list)
-                appender->Stop();
-        }else{
-            for(auto& appender : _log_appender_list)
-                appender->Restart();
-        }
     }
 
     void Debug(const char* log)
@@ -210,14 +199,15 @@ private:
 
     bool Allow(const Level level)
     {
-        if( _level == Level::OFF )
+        const Level& lowest_level = Configure::Instance().GetLowestLevel();
+        if( lowest_level == Level::OFF )
             return false;
 
-        if( _level == Level::ALL )
+        if( lowest_level == Level::ALL )
             return true;
 
         int level_t = static_cast<int>(level);
-        int _level_t = static_cast<int>(_level);
+        int _level_t = static_cast<int>(lowest_level);
         return level_t >= _level_t;
     }
 
@@ -225,7 +215,6 @@ private:
     std::string _log_name;
     
     std::vector<std::shared_ptr<Appender>> _log_appender_list;
-    Level _level;
 };
 
 class LoggerManager
@@ -259,12 +248,6 @@ public:
             return std::shared_ptr<Logger>();
 
         return iter->second;
-    }
-
-    void Disable(const std::string& logger_name)
-    {
-        if( _logger_list.count(logger_name) == 1 )
-            _logger_list[logger_name]->SetLevel(Level::OFF);
     }
 
     void ShowLoggers()

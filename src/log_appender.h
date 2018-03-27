@@ -124,7 +124,7 @@ public:
         _worker.Post(e);
     }
 
-protected:
+public:
     void Stop()
     {
         _worker.Stop();

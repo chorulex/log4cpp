@@ -13,6 +13,7 @@
 #include "../src/log_console_appender.h"
 #include "../src/log_file_appender.h"
 #include "../src/logger.h"
+#include "../src/log_configure.h"
 
 const char* PROMPT_STR = ">> ";
 #define TEST_PROMPT(func) printf("[%s] --- RUNNING\n", func);
@@ -101,37 +102,41 @@ void TestAppendConsoleLog()
     TEST_PROMPT(__FUNCTION__);
 
     Log4CPP::LoggerManager::Instance().Clear();
+    Log4CPP::Configure::Instance().SetLowestLevel(Log4CPP::Level::ALL);
 
     std::shared_ptr<Log4CPP::Formatter> console_formatter(new Log4CPP::ConsoleFormatter);
     std::shared_ptr<Log4CPP::ConsoleAppender> console_appender = Log4CPP::ConsoleAppender::Get();
     console_appender->SetFormatter(console_formatter);
+    console_appender->Start();
 
     const char* module = "test";
     std::shared_ptr<Log4CPP::Logger> logger = Log4CPP::Logger::GetLogger(module);
     logger->AddAppender(console_appender);
-    logger->SetLevel(Log4CPP::Level::ALL);
 
     logger->Debug("this debug log.");
     logger->Error("this error log.");
     logger->Warn("this warn log.");
     logger->Info("this info log.");
     logger->Fatal("this fatal log.");
+
+    console_appender->Stop();
 }
 void TestAppendFileLog()
 {
     TEST_PROMPT(__FUNCTION__);
 
+    Log4CPP::Configure::Instance().SetLowestLevel(Log4CPP::Level::ALL);
     Log4CPP::LoggerManager::Instance().Clear();
 
     const char* file_path = "test.log";
     std::shared_ptr<Log4CPP::Formatter> file_formatter(new Log4CPP::FileFormatter);
     std::shared_ptr<Log4CPP::FileAppender> file_appender(new Log4CPP::FileAppender(file_path));
     file_appender->SetFormatter(file_formatter);
+    file_appender->Start();
 
     const char* module = "test";
     std::shared_ptr<Log4CPP::Logger> logger = Log4CPP::Logger::GetLogger(module);
     logger->AddAppender(file_appender);
-    logger->SetLevel(Log4CPP::Level::ALL);
 
     logger->Debug("this debug log.");
     logger->Error("this error log.");
@@ -143,16 +148,17 @@ void TestAppendConsoleLogByStream()
 {
     TEST_PROMPT(__FUNCTION__);
 
+    Log4CPP::Configure::Instance().SetLowestLevel(Log4CPP::Level::ALL);
     Log4CPP::LoggerManager::Instance().Clear();
 
     std::shared_ptr<Log4CPP::Formatter> console_formatter(new Log4CPP::ConsoleFormatter);
     std::shared_ptr<Log4CPP::ConsoleAppender> console_appender = Log4CPP::ConsoleAppender::Get();
     console_appender->SetFormatter(console_formatter);
+    console_appender->Start();
 
     const char* module = "test";
     std::shared_ptr<Log4CPP::Logger> logger = Log4CPP::Logger::GetLogger(module);
     logger->AddAppender(console_appender);
-    logger->SetLevel(Log4CPP::Level::ALL);
 
     int times = 0;
     logger->Debug() << "this debug log." << times++ << Log4CPP::Endl;
@@ -160,6 +166,8 @@ void TestAppendConsoleLogByStream()
     logger->Warn() << "this warn log." << times++ << Log4CPP::Endl;
     logger->Info() << "this info log." << times++ << Log4CPP::Endl;
     logger->Fatal() << "this fatal log." << times++ << Log4CPP::Endl;
+
+    console_appender->Stop();
 }
 
 #define _TEST_LOG_STREAM_TYPE(var) \
@@ -169,15 +177,16 @@ void TestAppendConsoleLogByStreamAllType()
     TEST_PROMPT(__FUNCTION__);
 
     Log4CPP::LoggerManager::Instance().Clear();
+    Log4CPP::Configure::Instance().SetLowestLevel(Log4CPP::Level::ALL);
 
     std::shared_ptr<Log4CPP::Formatter> console_formatter(new Log4CPP::ConsoleFormatter);
     std::shared_ptr<Log4CPP::ConsoleAppender> console_appender = Log4CPP::ConsoleAppender::Get();
     console_appender->SetFormatter(console_formatter);
+    console_appender->Start();
 
     const char* module = "test";
     std::shared_ptr<Log4CPP::Logger> logger = Log4CPP::Logger::GetLogger(module);
     logger->AddAppender(console_appender);
-    logger->SetLevel(Log4CPP::Level::ALL);
 
     const std::string log_tex("this fatal log.");
     logger->Fatal() << log_tex << Log4CPP::Endl;
@@ -224,10 +233,42 @@ void TestAppendConsoleLogByStreamAllType()
     sprintf(val13, "hello");
     _TEST_LOG_STREAM_TYPE(val13);
     delete [] val13;
+
+    console_appender->Stop();
+}
+
+void TestConfigure()
+{
+    TEST_PROMPT(__FUNCTION__);
+
+    Log4CPP::Configure& cfg = Log4CPP::Configure::Instance();
+
+    Log4CPP::Level level = Log4CPP::Level::DEBUG;
+    assert(cfg.GetLowestLevel() == Log4CPP::Level::ALL);
+    cfg.SetLowestLevel(level);
+    assert(cfg.GetLowestLevel() == level);
+
+    unsigned int count = 10;
+    assert(cfg.GetBackupCount() == 0);
+    cfg.SetBackupCount(count);
+    assert(cfg.GetBackupCount() == count);
+
+    unsigned int file_size = 1; //MB
+    assert(cfg.GetLogFileMaxSize() == 3);
+    cfg.SetLogFileMaxSize(file_size);
+    assert(cfg.GetLogFileMaxSize() == file_size);
+
+    try{
+        cfg.SetLogFileMaxSize(0);
+        assert(false);
+    }catch(std::invalid_argument ex){
+    }
 }
 
 int main(int argc, char* argv[])
 {
+    TestConfigure();
+
     TestInitLogger();
     TestConstructConsoleFormatter();
     TestConstructFileFormatter();

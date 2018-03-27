@@ -17,6 +17,7 @@
 #include <fstream>
 #include <memory>
 
+#include "log_configure.h"
 #include "log_appender.h"
 
 namespace Log4CPP
@@ -32,10 +33,7 @@ public:
      * file_count: max log file count.
      * max_size_per_file: max size on MB per log file.
      */
-    FileAppender(const char* file_path, int file_count = 1, int max_size_per_file = 10)
-        : _file_path(file_path)
-        , _max_log_file_count(file_count)
-        , _max_file_size(max_size_per_file * 1024 * 1024)
+    FileAppender(const char* file_path) : _file_path(file_path)
     {
         Open();
     }
@@ -80,15 +78,15 @@ private:
 
     bool IsFull()
     {
-        if( _max_log_file_count ==  1 )
+        if( Configure::Instance().GetBackupCount() ==  0 )
             return false;
 
-        return static_cast<unsigned long>(_file_buffer.tellp()) >= _max_file_size;
+        return static_cast<unsigned long>(_file_buffer.tellp()) >= Configure::Instance().GetLogFileMaxSize() * 1024 * 1024;
     }
 
     void Backup()
     {
-        for(int index = _max_log_file_count; index > 0; index--){
+        for(int index = Configure::Instance().GetBackupCount(); index > 0; index--){
             const std::string& src_log_file = ConstructLogFilePath(index - 1);
             const std::string& des_log_file = ConstructLogFilePath(index);
 
@@ -116,10 +114,7 @@ private:
 
 private:
     std::ofstream _file_buffer;
-
     const std::string _file_path;
-    int _max_log_file_count = 1;
-    unsigned long _max_file_size = 0;
 };
 
 };
