@@ -11,6 +11,7 @@
 #include <iostream>
 
 #include "log4cpp.h"
+#include "loghelper.h"
 
 const char* PROMPT_STR = ">> ";
 #define TEST_PROMPT(func) printf("[%s] --- RUNNING\n", func);
@@ -262,6 +263,32 @@ void TestConfigure()
     }
 }
 
+void TestHelper()
+{
+    TEST_PROMPT(__FUNCTION__);
+
+    Log4CPP::Configure::Instance().SetLowestLevel(Log4CPP::Level::ALL);
+    Log4CPP::LoggerManager::Instance().Clear();
+
+    std::shared_ptr<Log4CPP::Formatter> console_formatter(new Log4CPP::ConsoleFormatter);
+    std::shared_ptr<Log4CPP::ConsoleAppender> console_appender = Log4CPP::ConsoleAppender::Get();
+    console_appender->SetFormatter(console_formatter);
+    console_appender->Start();
+
+    const char* module = "test";
+    std::shared_ptr<Log4CPP::Logger> logger = Log4CPP::Logger::GetLogger(module);
+    logger->AddAppender(console_appender);
+
+    int times = 0;
+    LOG_DEBUG(logger, "this debug log %d." ,times++);
+    LOG_ERROR(logger, "this error log %d." ,times++);
+    LOG_WARN(logger,  "this warn log %d."  ,times++);
+    LOG_INFO(logger,  "this info log %d."  ,times++);
+    LOG_FATAL(logger, "this fatal log %d." ,times++);
+
+    console_appender->Stop();
+}
+
 int main(int argc, char* argv[])
 {
     TestConfigure();
@@ -278,6 +305,8 @@ int main(int argc, char* argv[])
     TestAppendConsoleLog();
     TestAppendConsoleLogByStream();
     TestAppendConsoleLogByStreamAllType();
+
+    TestHelper();
     return 0;
 }
 
