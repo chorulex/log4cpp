@@ -241,6 +241,11 @@ void TestConfigure()
 
     Log4CPP::Configure& cfg = Log4CPP::Configure::Instance();
 
+    assert(Log4CPP::CurrentWorkDirectory().compare(cfg.GetDirectory()) == 0);
+    const char* log_dir = "./";
+    cfg.SetDirectory(log_dir);
+    assert(::strcmp(cfg.GetDirectory(), log_dir) == 0);
+
     Log4CPP::Level level = Log4CPP::Level::DEBUG;
     assert(cfg.GetLowestLevel() == Log4CPP::Level::ALL);
     cfg.SetLowestLevel(level);

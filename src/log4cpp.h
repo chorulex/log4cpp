@@ -13,6 +13,7 @@
 // linux
 #include <sys/stat.h>
 #include <sys/time.h>
+#include <unistd.h>
 
 // C++ std
 #include <atomic>
@@ -33,6 +34,18 @@
 namespace Log4CPP
 {
 // begin namespace
+
+std::string CurrentWorkDirectory()
+{
+    std::string current_directory("./");
+    char* c_current_dir = get_current_dir_name();
+    if( c_current_dir != NULL ){
+        current_directory = c_current_dir;
+        free( c_current_dir );
+    }
+
+    return current_directory;
+}
 
 enum class Level : int
 {
@@ -98,7 +111,10 @@ private:
  */
 class Configure
 {
-    Configure() = default;
+    Configure()
+    {
+        _work_dir = CurrentWorkDirectory();
+    }
 
 public:
     Configure(const Configure&) = delete;
@@ -112,6 +128,9 @@ public:
         static Configure _instance;
         return _instance;
     }
+
+    const char* GetDirectory() const { return _work_dir.c_str(); }
+    void SetDirectory(const char* dir) { _work_dir.assign(dir); }
 
     void SetLowestLevel(const Level& level) { _lowest_level = level; }
     const Level& GetLowestLevel() const { return _lowest_level; }
@@ -130,6 +149,8 @@ public:
     unsigned int GetLogFileMaxSize() const { return _file_max_size; }
 
 private:
+    std::string _work_dir;
+
     Level _lowest_level = Level::ALL;
     unsigned int _log_back_count = 0;
     unsigned int _file_max_size = 3; // MB
@@ -385,8 +406,11 @@ public:
      * file_count: max log file count.
      * max_size_per_file: max size on MB per log file.
      */
-    FileAppender(const char* file_path) : _file_path(file_path)
+    FileAppender(const char* file_path)
     {
+        _file_path.assign(Configure::Instance().GetDirectory());
+        _file_path.append(file_path);
+
         Open();
     }
     ~FileAppender()
@@ -466,7 +490,7 @@ private:
 
 private:
     std::ofstream _file_buffer;
-    const std::string _file_path;
+    std::string _file_path;
 };
 
 
