@@ -42,6 +42,8 @@ std::string CurrentWorkDirectory()
     if( c_current_dir != NULL ){
         current_directory = c_current_dir;
         free( c_current_dir );
+
+        current_directory.append("/");
     }
 
     return current_directory;
@@ -129,8 +131,14 @@ public:
         return _instance;
     }
 
-    const char* GetDirectory() const { return _work_dir.c_str(); }
+    /**
+     * set dir for saving files, should be end with "/".
+     * 
+     * NOTE:
+     * use local path if not set this.
+     */
     void SetDirectory(const char* dir) { _work_dir.assign(dir); }
+    const char* GetDirectory() const { return _work_dir.c_str(); }
 
     void SetLowestLevel(const Level& level) { _lowest_level = level; }
     const Level& GetLowestLevel() const { return _lowest_level; }
