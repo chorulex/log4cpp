@@ -392,7 +392,8 @@ public:
 private:
     void Output(const std::string& log_str) override
     {
-        std::cout << log_str << std::endl;
+        //std::cout << log_str << std::endl;
+        printf("%s\n", log_str.c_str());
     }
 };
 
