@@ -32,48 +32,18 @@ unsigned int GetCurrentThreadID()
 
 const static int MAX_LOG_BUF_LEN = 4096;
 
-#define LOG_LOCATION() \
-    sprintf(buffer, "[%u] [%s:%d][%s] ", GetCurrentThreadID(), __FILE__, __LINE__, __FUNCTION__); 
-
-#define LOG_DEBUG(logger, format, ...) \
-{ \
+#define LOG(logger, level, format...) {\
     char buffer[MAX_LOG_BUF_LEN] = {0}; \
-    LOG_LOCATION();\
-    sprintf(buffer + strlen(buffer), format,  ##__VA_ARGS__); \
-    logger->Debug(buffer); \
+    sprintf(buffer, "[%u] [%s:%d][%s] ", GetCurrentThreadID(), __FILE__, __LINE__, __FUNCTION__); \
+    sprintf(buffer + strlen(buffer), format); \
+    logger->level(buffer); \
 }
 
-#define LOG_INFO(logger, format, ...) \
-{ \
-    char buffer[MAX_LOG_BUF_LEN] = {0}; \
-    LOG_LOCATION();\
-    sprintf(buffer + strlen(buffer), format,  ##__VA_ARGS__); \
-    logger->Info(buffer); \
-}
-
-#define LOG_WARN(logger, format, ...) \
-{ \
-    char buffer[MAX_LOG_BUF_LEN] = {0}; \
-    LOG_LOCATION();\
-    sprintf(buffer + strlen(buffer), format,  ##__VA_ARGS__); \
-    logger->Warn(buffer); \
-}
-
-#define LOG_ERROR(logger, format, ...) \
-{ \
-    char buffer[MAX_LOG_BUF_LEN] = {0}; \
-    LOG_LOCATION();\
-    sprintf(buffer + strlen(buffer), format,  ##__VA_ARGS__); \
-    logger->Error(buffer); \
-}
-
-#define LOG_FATAL(logger, format, ...) \
-{ \
-    char buffer[MAX_LOG_BUF_LEN] = {0}; \
-    LOG_LOCATION();\
-    sprintf(buffer + strlen(buffer), format,  ##__VA_ARGS__); \
-    logger->Fatal(buffer); \
-}
+#define LOG_DEBUG(logger, format...) LOG(logger, Debug, format)
+#define LOG_INFO(logger, format...)  LOG(logger, Info, format)
+#define LOG_WARN(logger, format...)  LOG(logger, Warn, format) 
+#define LOG_ERROR(logger, format...) LOG(logger, Error, format)
+#define LOG_FATAL(logger, format...) LOG(logger, Fatal, format)
 
 }
 #endif
