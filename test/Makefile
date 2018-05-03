@@ -1,6 +1,6 @@
 PROGRAMS	:= test
 CXX 		:= g++
-CXXFLAGS	:= -std=c++11 -Wall -g
+CXXFLAGS	:= -std=c++11 -Wall -g -I../src
 LDFLAGS		:=
 #-pg
 LDLIBS = -lpthread
