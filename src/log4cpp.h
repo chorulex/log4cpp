@@ -14,6 +14,8 @@
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <unistd.h>
+#include <sys/types.h>
+#include <sys/syscall.h>
 
 // C++ std
 #include <atomic>
@@ -34,20 +36,29 @@
 namespace Log4CPP
 {
 // begin namespace
-
-std::string CurrentWorkDirectory()
+class Utility
 {
-    std::string current_directory("./");
-    char* c_current_dir = get_current_dir_name();
-    if( c_current_dir != NULL ){
-        current_directory = c_current_dir;
-        free( c_current_dir );
-
-        current_directory.append("/");
+    Utility();
+public:
+    static unsigned int CurrentThreadID()
+    {
+        return syscall(SYS_gettid);
     }
 
-    return current_directory;
-}
+    static std::string CurrentWorkDirectory()
+    {
+        std::string current_directory("./");
+        char* c_current_dir = get_current_dir_name();
+        if( c_current_dir != NULL ){
+            current_directory = c_current_dir;
+            free( c_current_dir );
+
+            current_directory.append("/");
+        }
+
+        return current_directory;
+    }
+};
 
 enum class Level : int
 {
@@ -63,15 +74,16 @@ enum class Level : int
 class LogEvent
 {
 public:
-    LogEvent(const char* module, const Level log_level, const char* log_text) : _module(module), _level(log_level), _text(log_text)
+    LogEvent(int thread_id, const char* module, const Level log_level, const char* log_text)
+        : _thread_id(thread_id), _module(module), _level(log_level), _text(log_text)
     {
         gettimeofday(&_timestamp, NULL);
-        //time(&_timestamp);
     }
 
     LogEvent(const LogEvent& other) = default;
     LogEvent(const LogEvent&& other)
     {
+        this->_thread_id = other._thread_id;
         this->_module = other._module;
         this->_level = other._level;
         this->_text = std::move(other._text);
@@ -79,6 +91,7 @@ public:
     }
     LogEvent& operator= (const LogEvent&& other)
     {
+        this->_thread_id = other._thread_id;
         this->_module = other._module;
         this->_level = other._level;
         this->_text = std::move(other._text);
@@ -86,12 +99,14 @@ public:
         return *this;
     }
 
+    const int ThreadID() const { return _thread_id;}
     const char* Module() const { return _module;}
     const timeval& Timestamp() const { return _timestamp;}
     const Level& LogLevel() const { return _level;}
     const std::string& Text() const { return _text;}
 
 private:
+    int _thread_id;
     const char* _module;
     Level _level;
     std::string _text;
@@ -115,7 +130,7 @@ class Configure
 {
     Configure()
     {
-        _work_dir = CurrentWorkDirectory();
+        _work_dir = Utility::CurrentWorkDirectory();
     }
 
 public:
@@ -224,6 +239,7 @@ private:
     {
         std::string header;
         header.append("[").append(FormatTimestamp(e.Timestamp())).append("] ");
+        header.append("[").append(std::to_string(e.ThreadID())).append("] ");
         header.append("[").append(e.Module()).append("] ");
         header.append(FormatLevel(e.LogLevel())).append(" ");
         return std::move(header);
@@ -240,6 +256,7 @@ private:
     {
         std::string header;
         header.append("[").append(std::move(FormatTimestamp(e.Timestamp()))).append("] ");
+        header.append("[").append(std::to_string(e.ThreadID())).append("] ");
         header.append(FormatLevel(e.LogLevel())).append(" ");
         return std::move(header);
     }
@@ -671,7 +688,7 @@ private:
         if( !Allow(level) )
             return;
 
-        LogEvent e(_log_name.c_str(), level, log);
+        LogEvent e(Utility::CurrentThreadID(), _log_name.c_str(), level, log);
 
         for(auto& appender : _log_appender_list)
             appender->Append(e);

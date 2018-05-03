@@ -10,9 +10,6 @@
 #ifndef _LOG4CPP_HELPER_H_
 #define _LOG4CPP_HELPER_H_
 
-#include <sys/types.h>
-#include <sys/syscall.h>
-#include <unistd.h>
 #include <cstdarg>
 #include <cstring>
 #include <sstream>
@@ -25,16 +22,11 @@
 
 namespace
 {
-unsigned int GetCurrentThreadID()
-{
-    return syscall(SYS_gettid);
-}
-
 const static int MAX_LOG_BUF_LEN = 4096;
 
 #define LOG(logger, level, format...) {\
     char buffer[MAX_LOG_BUF_LEN] = {0}; \
-    sprintf(buffer, "[%u] [%s:%d][%s] ", GetCurrentThreadID(), __FILE__, __LINE__, __FUNCTION__); \
+    sprintf(buffer, "[%s:%d][%s] ", __FILE__, __LINE__, __FUNCTION__); \
     sprintf(buffer + strlen(buffer), format); \
     logger->level(buffer); \
 }
